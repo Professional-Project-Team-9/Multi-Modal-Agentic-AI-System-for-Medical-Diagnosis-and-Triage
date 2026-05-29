@@ -1,8 +1,8 @@
 # Multi-Modal-Agentic-AI-System-for-Medical-Diagnosis-and-Triage
 
-Austin- Team Leader,
-Girish- Scrum Master,
-Victor- Code Review Manager,
-karan- Test Plan Manager,
-Israel- Communication Lead,
-Abhishek- Github Manager.
+Augustine Akauba- Team Leader,
+Girish Gowd- Scrum Master,
+Victor Oluwadare- Code Review Manager,
+karan jayachandran- Test Plan Manager,
+Israel Ajayi- Communication Lead,
+Abhishek Gupta- Github Manager.
