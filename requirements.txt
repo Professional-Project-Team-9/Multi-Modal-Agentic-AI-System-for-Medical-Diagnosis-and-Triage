@@ -1,0 +1,68 @@
+# ── Core ML / Deep Learning ─────────────────────────────────────────────────
+torch>=2.2.0
+torchvision>=0.17.0
+timm>=0.9.16
+
+# ── NLP / Transformers ───────────────────────────────────────────────────────
+transformers>=4.46.0
+datasets>=2.19.0
+tokenizers>=0.19.0
+accelerate>=0.29.0
+optimum>=1.19.0
+
+# ── Gradient Boosting ────────────────────────────────────────────────────────
+xgboost>=2.0.0
+lightgbm>=4.3.0
+
+# ── Classical ML ─────────────────────────────────────────────────────────────
+scikit-learn>=1.4.0
+imbalanced-learn>=0.12.0
+
+# ── Hyperparameter Tuning ────────────────────────────────────────────────────
+optuna>=3.6.0
+
+# ── Data & Numerics ──────────────────────────────────────────────────────────
+pandas>=2.2.0
+numpy>=1.26.0
+scipy>=1.13.0
+
+# ── Visualisation ────────────────────────────────────────────────────────────
+matplotlib>=3.8.0
+seaborn>=0.13.0
+Pillow>=10.3.0
+
+# ── ONNX Export & Inference ──────────────────────────────────────────────────
+onnx>=1.16.0
+onnxruntime>=1.18.0
+onnxruntime-gpu>=1.18.0
+skl2onnx>=1.17.0
+
+# ── LLM / Inference APIs ─────────────────────────────────────────────────────
+groq>=0.5.0
+huggingface-hub>=0.22.0
+
+# ── LLM Fine-Tuning (QLoRA / Unsloth) ────────────────────────────────────────
+unsloth                          # optimized QLoRA fine-tuning + fast inference (8B on a single T4)
+unsloth_zoo                      # companion package required by recent Unsloth
+peft>=0.11.0                     # LoRA / adapter layers
+trl>=0.9.0                       # SFTTrainer + train_on_responses_only
+bitsandbytes>=0.43.0             # 4-bit (NF4) quantization for QLoRA
+sentencepiece>=0.2.0             # tokenizer backend for Llama/Gemma models
+protobuf>=3.20.0                 # required by sentencepiece-based tokenizers
+wandb>=0.17.0                    # training run / loss-curve tracking
+hf_transfer>=0.1.6               # faster Hub up/down-loads (set HF_HUB_ENABLE_HF_TRANSFER=1)
+hf_xet>=0.1.0                    # Hub Xet backend (or disable via HF_HUB_DISABLE_XET=1)
+# triton                         # GPU kernels — Linux/CUDA only; ships with torch on most setups
+# xformers                       # memory-efficient attention; install matched to your CUDA/torch
+# flash-attn                     # optional faster attention (Ampere+); slow to build, skip if unneeded
+
+# ── Evaluation Metrics ───────────────────────────────────────────────────────
+evaluate>=0.4.0
+rouge-score>=0.1.2
+bert-score>=0.3.13
+
+# ── Utilities ────────────────────────────────────────────────────────────────
+tqdm>=4.66.0
+joblib>=1.4.0
+python-dotenv>=1.0.0
+requests>=2.31.0

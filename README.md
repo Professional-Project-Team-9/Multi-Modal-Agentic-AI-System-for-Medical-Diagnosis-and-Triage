@@ -2,21 +2,23 @@
 
 > **University of Hertfordshire — Final Year Group Project**  
 > An autonomous AI agent that diagnoses chest and cardiovascular conditions by sequentially analysing patient symptoms, chest X-ray images, and structured clinical records — then triages and books appropriate specialist appointments.
+>
+> **Week 6 update:** the patient-facing **Response QA model** is now complete. After evaluating three medical LLM families (OpenMed → OpenBioLLM → MedGemma), the response node is delivered as **MedGemma-4B-IT with a UK-localised system prompt and few-shot prompting** — see _Model 3_ and the _Model-Direction Journey_ section below.
 
 ---
 
 ## 📌 Project Status
 
-| Phase   | Description                                  | Status         |
-| ------- | -------------------------------------------- | -------------- |
-| Phase 1 | Exploratory Data Analysis (EDA)              | ✅ Complete    |
-| Phase 2 | Data Preprocessing                           | ✅ Complete    |
-| Phase 3 | Feature Engineering                          | ✅ Complete    |
-| Phase 4 | Model Building — CNN (ChestVision)           | ✅ Complete    |
-| Phase 4 | Model Building — Hybrid EHR (ClinicalFusion) | ✅ Complete    |
-| Phase 4 | Model Building — BioClinical QA (Fine-tune)  | 🔄 In Progress |
-| Phase 5 | Evaluation & Optimisation                    | ⏳ Pending     |
-| Phase 6 | App Deployment (Next.js + LangGraph)         | ⏳ Pending     |
+| Phase   | Description                                             | Status         |
+| ------- | ------------------------------------------------------- | -------------- |
+| Phase 1 | Exploratory Data Analysis (EDA)                         | ✅ Complete    |
+| Phase 2 | Data Preprocessing                                      | ✅ Complete    |
+| Phase 3 | Feature Engineering                                     | ✅ Complete    |
+| Phase 4 | Model Building — CNN (ChestVision)                      | ✅ Complete    |
+| Phase 4 | Model Building — Hybrid EHR (ClinicalFusion)            | ✅ Complete    |
+| Phase 4 | Model Building — Response QA LLM (fine-tune + few-shot) | ✅ Complete    |
+| Phase 5 | Evaluation & Optimisation                               | 🔄 In Progress |
+| Phase 6 | App Deployment (Next.js + LangGraph)                    | ⏳ Pending     |
 
 ---
 
@@ -29,9 +31,9 @@
 | Abishek | GitHub Document Manager | [@abhishek7112000](https://github.com/abhishek7112000) | Data pipeline, ONNX export & quantisation        |
 | Israel  | Communications Lead     | [@AjayiIsrael](https://github.com/AjayiIsrael)         | RAG pipeline, ChromaDB, Medical Encyclopedia     |
 | Victor  | Code Review Manager     | [@victoran0](https://github.com/victoran0)             | AI Agent — LangGraph.js orchestration            |
-| Karan   | Test Plan Manager       | [@k-jay23](https://github.com/k-jay23)—                | Application — Next.js, Google Calendar/Gmail API |
+| Karan   | Test Plan Manager       | [@k-jay23](https://github.com/k-jay23)                 | Application — Next.js, Google Calendar/Gmail API |
 
-> **Repository:** https://github.com/Professional-Project-Team-9/Week-5-Team-9
+> **Repository:** https://github.com/Professional-Project-Team-9/Week-6-Team-9
 
 ---
 
@@ -46,7 +48,7 @@ Patient Input (symptoms + X-ray + clinical record)
 │  intake_node → route_node → xray_node + clinical_node    │
 │  → synthesise_node (MedGemma-27B-IT)                     │
 │  → [clarify_node if confidence < 0.60]                   │
-│  → rag_node (ChromaDB) → response_node (BioClinical QA)      │
+│  → rag_node (ChromaDB) → response_node (MedGemma-4B QA)      │
 │  → triage_node → appointment booking                     │
 └──────────────────────────────────────────────────────────┘
         │                    │
@@ -60,13 +62,13 @@ Patient Input (symptoms + X-ray + clinical record)
 
 ### Model Stack
 
-| Component                    | Technology                                 | Dataset                  | Output                               |
-| ---------------------------- | ------------------------------------------ | ------------------------ | ------------------------------------ |
-| **Model 1 — ChestVision**    | ViT-B/16 fine-tuned (timm) ★               | NIH ChestX-ray14         | 14-label X-ray classification (ONNX) |
-| **Model 2 — ClinicalFusion** | MLP + frozen BioClinical-ModernBERT-large  | Synthea Synthetic EHR    | 28-label condition prediction (ONNX) |
-| **Model 3 — BioClinical QA** | BioClinical fine-tuned (transfer learning) | Medical QA Dataset (HF)  | Patient-facing clinical response     |
-| **Agent LLM**                | MedGemma-27B-IT                            | —                        | DiagnosisReport JSON synthesis       |
-| **RAG Layer**                | ChromaDB + BioClinical embeddings          | A-Z Medical Encyclopedia | Clinical QA enrichment               |
+| Component                    | Technology                                | Dataset                                | Output                                   |
+| ---------------------------- | ----------------------------------------- | -------------------------------------- | ---------------------------------------- |
+| **Model 1 — ChestVision**    | ViT-B/16 fine-tuned (timm) ★              | NIH ChestX-ray14                       | 14-label X-ray classification (ONNX)     |
+| **Model 2 — ClinicalFusion** | MLP + frozen BioClinical-ModernBERT-large | Synthea Synthetic EHR                  | 28-label condition prediction (ONNX)     |
+| **Model 3 — Response QA**    | MedGemma-4B-IT + UK few-shot prompting ★  | ChatDoctor (HealthCareMagic + iCliniq) | Patient-facing triaged clinical response |
+| **Agent LLM**                | MedGemma-27B-IT                           | —                                      | DiagnosisReport JSON synthesis           |
+| **RAG Layer**                | ChromaDB + BioClinical embeddings         | A-Z Medical Encyclopedia               | Clinical QA enrichment                   |
 
 ---
 
@@ -125,6 +127,31 @@ Hybrid model trained on 1,376 synthetic patients, 80 tabular features, 28 condit
 
 ---
 
+### Model 3 — Response QA LLM (Fine-tune + Few-shot)
+
+The patient-facing response node was the most iterated component of the project. Its job is to take the synthesised diagnosis report (from the upstream imaging, EHR, RAG and reasoning nodes) plus the patient's own description, and produce a clear, empathetic, **severity-calibrated** reply that triages the patient and, where needed, escalates to urgent care or appointment booking.
+
+Three medical LLM families were evaluated before settling on the final choice:
+
+| Stage | Model family                | Type                                      | Outcome                         | Why we moved on                                                                                                                                                                                                                                                                                                                                       |
+| ----- | --------------------------- | ----------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | **OpenMed (SuperClinical)** | Encoder / token-classification (NER, PII) | ❌ Rejected                     | These are **extraction** models (disease NER, PII de-identification) — they label spans, they cannot _generate_ a free-text answer. Architecturally unable to perform the response task.                                                                                                                                                              |
+| 2     | **Llama3-OpenBioLLM-8B**    | Decoder / causal LM (fine-tuned)          | ⚠️ Fine-tuned, then de-selected | A true generative medical model. We QLoRA-fine-tuned it on ChatDoctor with Unsloth. However, the fine-tune **degraded triage**: on a textbook heart-attack case it recommended a routine stress test, whereas the _base_ model correctly advised emergency care. The unfiltered ChatDoctor data overwrote the model's pretrained emergency instincts. |
+| 3     | **MedGemma-4B-IT** ★        | Multimodal decoder (reasoning)            | ✅ **Selected**                 | Out-of-the-box it triaged the same emergency case **correctly**, produced the best-structured reasoning, and at 4B fits constrained GPUs comfortably (and offers a multimodal upgrade path). Paired with a UK-localised system prompt + few-shot prompting, it meets the response-node requirements **without** a destructive fine-tune.              |
+
+**Key finding — fine-tuning is not always the answer.** Fine-tuning `OpenBioLLM-8B` on the raw ChatDoctor corpus _reduced_ clinical safety, because the forum-sourced answers model a non-emergency context (e.g. "book a stress test" for chest pain) and the model imitated that style rather than learning calibrated urgency. The base/instruction-tuned models already encode stronger emergency recognition from pretraining. We therefore favour **MedGemma's base behaviour steered by prompt engineering**, reserving any future fine-tuning for a **cleaned, triage-filtered** dataset so it _preserves_ rather than erodes emergency judgement.
+
+**Final response-node configuration:**
+
+- **Model:** `google/medgemma-1.5-4b-it` (4-bit, served via Unsloth fast inference)
+- **Prompting:** UK system instruction (999 / A&E / NHS 111 / GP / pharmacist) + 3 few-shot exemplars, one per severity tier (mild → self-care/pharmacist, moderate → GP/NHS 111, emergency → call 999)
+- **Fine-tuning method (OpenBioLLM experiments):** QLoRA (4-bit base + LoRA adapters, r=32) on a single Kaggle T4 via **Unsloth**, with response-only loss masking; checkpoints streamed to the HuggingFace Hub for crash-safe resume
+- **Safety boundary:** the LLM **communicates**; it is **not** the escalation authority. The urgent/999/booking decision is made by a deterministic rule layer keyed to red-flag symptoms and upstream-node outputs, biased toward over-triage.
+
+> ⚠️ **Data-governance note (ChatDoctor):** the ChatDoctor configs (HealthCareMagic, iCliniq) are **real** patient–doctor exchanges scraped from telemedicine forums. De-identification was automated and imperfect (residual ages, dates, and free-text detail remain), and there is no documented patient consent for ML reuse. It is treated as a **research/prototyping** asset only — not relied upon as a GDPR-compliant basis for production, and no real patient data is served by the deployed system.
+
+---
+
 ## 🗂️ Datasets
 
 ### Dataset 1 — NIH ChestX-ray14
@@ -147,11 +174,11 @@ Hybrid model trained on 1,376 synthetic patients, 80 tabular features, 28 condit
 
 ### Dataset 3 — Medical QA (HuggingFace)
 
-- **Source:** Malikeh1375 / HuggingFace Hub
-- **Size:** ~2.3 GB · MedQA + MedMCQA + PubMedQA + HealthSearchQA
-- **Access:** `load_dataset("Malikeh1375/medical-question-answering-datasets")`
-- **Licence:** Apache 2.0
-- **Ethics:** Aggregates public NLP corpora; no private patient records
+- **Source:** Malikeh1375 / HuggingFace Hub (a repackaging of ChatDoctor + Medical Meadow)
+- **Configs used for the response model:** `chatdoctor_healthcaremagic` + `chatdoctor_icliniq` — real patient→doctor Q&A (the `all-processed` mix was deliberately avoided, as it blends in exam MCQs and literature summarisation that teach the wrong behaviour)
+- **Access:** `load_dataset("Malikeh1375/medical-question-answering-datasets", "chatdoctor_healthcaremagic")`
+- **Licence:** MIT (dataset card) — a _copyright_ licence only; it does **not** establish GDPR/data-protection lawfulness
+- **Ethics:** ⚠️ **Real, scraped** forum data with automated (imperfect) de-identification and no documented patient consent. Used for **research/prototyping only**; see the data-governance note under _Model 3_. The deployed system serves **no** real patient data.
 
 ### Knowledge Base (RAG — not a training dataset)
 
@@ -298,7 +325,8 @@ BIOCLINICAL_MODEL = 'thomas-sounack/BioClinical-ModernBERT-large'
 ## 🔄 Next Steps
 
 - [ ] Export ViT-B/16 and ClinicalFusion to ONNX and apply INT8 quantisation
-- [ ] Fine-tune BioClinical QA model on `Malikeh1375/medical-question-answering-datasets`
+- [x] Build & evaluate the Response QA model — OpenMed → OpenBioLLM (QLoRA fine-tune) → **MedGemma-4B-IT + UK few-shot** (selected)
+- [ ] Assemble a cleaned, triage-filtered QA set for any future safe fine-tune
 - [ ] Build ChromaDB vector store from A-Z Medical Encyclopedia
 - [ ] Implement LangGraph.js agent with all nodes
 - [ ] Scaffold Next.js application (Clerk auth + NeonDB)
@@ -329,6 +357,11 @@ This project uses only de-identified public data (NIH ChestX-ray14) and entirely
 - Li, D. et al. (2024). _MEDIQ: Question-asking LLMs for medical QA_. NeurIPS 2024.
 - Sounack, T. et al. (2025). _BioClinical ModernBERT: A State-of-the-Art Long-Context Encoder for Biomedical and Clinical NLP_. arXiv:2506.10896.
 - Malikeh1375. (2023). Medical question answering datasets [Dataset]. HuggingFace. https://huggingface.co/datasets/Malikeh1375/medical-question-answering-datasets
+- Ankit Pal & Malaikannan Sankarasubbu. (2024). _Llama3-OpenBioLLM-8B_ [Model]. HuggingFace, Saama AI Labs. https://huggingface.co/aaditya/Llama3-OpenBioLLM-8B
+- Sellergren, A. et al. / Google Research & DeepMind. (2025). _MedGemma: Medical vision-language foundation models built on Gemma 3_. arXiv:2507.05201. Model: https://huggingface.co/google/medgemma-1.5-4b-it
+- Li, Y. et al. (2023). _ChatDoctor: A Medical Chat Model Fine-Tuned on LLaMA Using Medical Domain Knowledge_. Cureus 15(6):e40895. (HealthCareMagic-100k & iCliniq source data) arXiv:2303.14070.
+- OpenMed. (2025). _OpenMed NER / SuperClinical clinical entity & PII models_ [Models]. HuggingFace. https://huggingface.co/OpenMed
+- Han, D., Han, M. & the Unsloth team. (2024–2025). _Unsloth: 2× faster, 70% less-memory LLM fine-tuning_ [Software]. https://github.com/unslothai/unsloth
 
 ---
 
@@ -350,5 +383,5 @@ Model weights: subject to respective model provider terms of use.
 ---
 
 <div align="center">
-  <sub>University of Hertfordshire · Final Year Project · 2025–2026</sub>
+  <sub>University of Hertfordshire · Masters Project · 2025–2026 · Week 6</sub>
 </div>
