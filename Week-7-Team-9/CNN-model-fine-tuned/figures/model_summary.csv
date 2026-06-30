@@ -1,0 +1,4 @@
+Model,Mean AUC,Macro-F1,Params (M)
+ViT_B16,0.8175,0.3265,85.8
+EfficientNetV2B0,0.7913,0.3,5.9
+ResNet50V2,0.7666,0.2517,23.5

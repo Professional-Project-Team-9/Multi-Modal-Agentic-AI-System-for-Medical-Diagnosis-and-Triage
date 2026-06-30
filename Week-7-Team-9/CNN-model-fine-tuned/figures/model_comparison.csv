@@ -1,0 +1,17 @@
+Condition,ResNet50V2 AUC,ViT_B16 AUC,EfficientNetV2B0 AUC
+Cardiomegaly,0.8068,0.9098,0.8831
+Effusion,0.8216,0.8767,0.8588
+Pneumonia,0.7063,0.7504,0.695
+Consolidation,0.7679,0.7955,0.7797
+Edema,0.8815,0.893,0.8989
+Pneumothorax,0.8248,0.873,0.851
+Infiltration,0.671,0.694,0.6853
+Atelectasis,0.746,0.7948,0.7783
+Nodule,0.6771,0.7302,0.7065
+Mass,0.7229,0.8142,0.7755
+Pleural_Thickening,0.733,0.7803,0.7571
+Emphysema,0.8339,0.9079,0.8895
+Fibrosis,0.7655,0.7963,0.772
+Hernia,0.8031,0.881,0.7867
+No Finding,0.7375,0.7651,0.7519
+MEAN,0.7666,0.8175,0.7913

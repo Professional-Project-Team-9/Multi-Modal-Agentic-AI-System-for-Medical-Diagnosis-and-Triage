@@ -1,0 +1,17 @@
+Condition,ResNet-50 AUC
+Cardiomegaly,0.9089
+Effusion,0.8605
+Pneumonia,0.7287
+Consolidation,0.7854
+Edema,0.8914
+Pneumothorax,0.8408
+Infiltration,0.6775
+Atelectasis,0.7646
+Nodule,0.6898
+Mass,0.7866
+Pleural_Thickening,0.7584
+Emphysema,0.85
+Fibrosis,0.7615
+Hernia,0.778
+No Finding,0.7572
+MEAN,0.7893

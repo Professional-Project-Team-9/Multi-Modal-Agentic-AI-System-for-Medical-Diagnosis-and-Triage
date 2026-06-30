@@ -1,0 +1,29 @@
+============================================================
+  Training ViT_B16
+============================================================
+  Phase 1 — head only (5 epochs @ 0.001)
+  [head] Epoch 01/5 | Train 0.9232 | Val 0.8975 | AUC 0.7257 | LR 1.00e-03 | 471s
+         ✅ New best AUC: 0.7257 — saved
+  [head] Epoch 02/5 | Train 0.8947 | Val 0.9322 | AUC 0.7328 | LR 1.00e-03 | 449s
+         ✅ New best AUC: 0.7328 — saved
+  [head] Epoch 03/5 | Train 0.8906 | Val 0.8965 | AUC 0.7318 | LR 1.00e-03 | 435s
+  [head] Epoch 04/5 | Train 0.8865 | Val 0.8874 | AUC 0.7376 | LR 1.00e-03 | 426s
+         ✅ New best AUC: 0.7376 — saved
+  [head] Epoch 05/5 | Train 0.8835 | Val 0.8889 | AUC 0.7380 | LR 1.00e-03 | 424s
+         ✅ New best AUC: 0.7380 — saved
+  Phase 2 — fine-tune all (15 epochs @ 1e-05, cosine)
+  [ft] Epoch 01/15 | Train 0.7957 | Val 0.7545 | AUC 0.8074 | LR 1.00e-05 | 791s
+         ✅ New best AUC: 0.8074 — saved
+  [ft] Epoch 02/15 | Train 0.7369 | Val 0.7401 | AUC 0.8161 | LR 9.89e-06 | 791s
+         ✅ New best AUC: 0.8161 — saved
+  [ft] Epoch 03/15 | Train 0.7056 | Val 0.7363 | AUC 0.8253 | LR 9.57e-06 | 790s
+         ✅ New best AUC: 0.8253 — saved
+  [ft] Epoch 04/15 | Train 0.6769 | Val 0.7418 | AUC 0.8246 | LR 9.05e-06 | 804s
+  [ft] Epoch 05/15 | Train 0.6464 | Val 0.7467 | AUC 0.8240 | LR 8.35e-06 | 801s
+  [ft] Epoch 06/15 | Train 0.6129 | Val 0.7608 | AUC 0.8162 | LR 7.50e-06 | 830s
+  [ft] Epoch 07/15 | Train 0.5725 | Val 0.7877 | AUC 0.8122 | LR 6.55e-06 | 822s
+  [ft] Epoch 08/15 | Train 0.5317 | Val 0.8974 | AUC 0.8012 | LR 5.52e-06 | 811s
+  [ft] Epoch 09/15 | Train 0.4873 | Val 0.9615 | AUC 0.7970 | LR 4.48e-06 | 806s
+         ⏹️  Early stopping (ft) at epoch 9
+
+  ✅ ViT_B16 done | Best Val AUC: 0.8253
