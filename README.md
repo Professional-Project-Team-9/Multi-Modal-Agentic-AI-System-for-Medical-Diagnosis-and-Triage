@@ -3,7 +3,7 @@
 > **University of Hertfordshire — Final Year Group Project**  
 > An autonomous AI agent that diagnoses chest and cardiovascular conditions by sequentially analysing patient symptoms, chest X-ray images, and structured clinical records — then triages and books appropriate specialist appointments....
 >
-> **Week 7 update:** model **evaluation & optimisation is complete**. All three models are now trained, evaluated and threshold-tuned — **ChestVision** (ViT-B/16, test AUC **0.818**), **ClinicalFusion** (val macro AUC **0.852**, macro-F1 lifted **0.44 → 0.57** via per-label threshold tuning), and the **Response QA** node delivered as **MedGemma-4B-IT + UK few-shot** — and the **RAG validation layer** (ChromaDB + A–Z encyclopedia) is built. Focus now shifts to the **application layer**: building the **Next.js front-end pages** (in progress), then **LangGraph.js agent orchestration + Google Calendar triage integration**, then **end-to-end evaluation & optimisation of the whole system**.
+> **Week 7 update:** model **evaluation & optimisation is complete**. All three models are now trained, evaluated and threshold-tuned — **ChestVision** (ViT-B/16, test AUC **0.818**), **ClinicalFusion** (val macro AUC **0.852**, macro-F1 lifted **0.44 → 0.57** via per-label threshold tuning), and the **Response QA** node delivered as **MedGemma-4B-IT + UK few-shot** — and the **RAG validation layer** (ChromaDB + A–Z encyclopedia) is built. Focus now shifts to the **application layer**: building the **Next.js front-end pages** (in progress), then **LangGraph.js agent orchestration + Google Calendar triage integration**, then **end-to-end evaluation & optimisation of the whole system**...
 
 ---
 
